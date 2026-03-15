@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Wizard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="setup-screen" class="container">
+        <h1>Reaction Wizard 🧙‍♂️</h1>
+        
+        <div class="config-group">
+            <label>Duração do Estímulo (segundos)</label>
+            <input type="number" id="stimulus-duration" value="0.8" step="0.1" min="0.1">
+        </div>
+
+        <div class="config-group">
+            <label>Intervalo Entre os Estímulos (segundos)</label>
+            <input type="number" id="base-interval" value="2.0" step="0.1" min="0.1">
+            <div class="checkbox-item" style="margin-top: 10px;">
+                <input type="checkbox" id="randomize-interval" checked> 
+                <span style="font-size: 0.85em; color: #888;">Randomizar Intervalo</span>
+            </div>
+        </div>
+
+        <div class="config-group">
+            <label>Tempo Total da Sessão (segundos)</label>
+            <input type="number" id="session-time" value="60" step="1" min="1">
+        </div>
+
+        <div class="config-group">
+            <h2>Selecione os Estímulos</h2>
+            
+            <h3>Cores</h3>
+            <div class="checkbox-grid">
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="VERMELHO"> Vermelho</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="VERDE"> Verde</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="AZUL"> Azul</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="COR DO BRUXÃO"> Cor do Bruxão</div>
+            </div>
+
+            <h3>Setas</h3>
+            <div class="checkbox-grid">
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="↑"> Cima</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="→"> Direita</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="↓"> Baixo</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="←"> Esquerda</div>
+            </div>
+
+            <h3>Números</h3>
+            <div class="checkbox-grid">
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="1"> 1</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="4"> 4</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="2"> 2</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="5"> 5</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="3"> 3</div>
+                <div class="checkbox-item"><input type="checkbox" name="stim" value="6"> 6</div>
+            </div>
+        </div>
+
+        <button onclick="startTraining()">INICIAR SESSÃO</button>
+
+        <div class="config-group" style="margin-top: 30px;">
+            <h2>Grimório</h2>
+            <div id="history-list"></div>
+            <button onclick="clearHistory()" id="btn-clear">Limpar Tudo</button>
+        </div>
+    </div>
+
+    <div id="training-screen" class="container" style="display: none; justify-content: center;">
+        <div id="timer-display">Tempo: --s</div>
+        <div id="counter">Estímulos: 0</div>
+        <div id="display-area"></div>
+        <button class="stop-btn" onclick="stopTraining()">PARAR</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
