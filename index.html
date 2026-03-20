@@ -3,77 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reaction Wizard</title>
+    <title>Reaction Wizard Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="toggleHelp()">&times;</span>
+            <h2>Manual</h2>
+            <p>O <strong>Reaction Wizard</strong> treina seu tempo de reação e tomada de decisão.</p>
+            <ul>
+                <li><strong>Associação:</strong> Associe cada cor, seta, número ou som a um movimento.</li>
+                <li><strong>Execução:</strong> Assim que o estímulo for emitido, execute o movimento combinado o mais rápido possível.</li>
+                <li><strong>Legenda:</strong> Use para não esquecer qual movimento associou a cada sinal durante o treino.</li>
+                <li><strong>Inteligência:</strong> O app impede que o mesmo estímulo se repita mais de 3 vezes seguidas.</li>
+            </ul>
+        </div>
+    </div>
+
     <div id="setup-screen" class="container">
-        <h1>Reaction Wizard 🧙‍♂️</h1>
+        <div class="header-area">
+            <img src="imagens/varinha.png" alt="" class="wand-icon">
+            <h1>Reaction Wizard</h1>
+            <span>🧙‍♂️</span>
+            <div id="help-icon" onclick="toggleHelp()">...</div>
+        </div>
         
         <div class="config-group">
-            <label>Duração do Estímulo (segundos)</label>
-            <input type="number" id="stimulus-duration" value="0.8" step="0.1" min="0.1">
-        </div>
-
-        <div class="config-group">
-            <label>Intervalo Entre os Estímulos (segundos)</label>
-            <input type="number" id="base-interval" value="2.0" step="0.1" min="0.1">
-            <div class="checkbox-item" style="margin-top: 10px;">
-                <input type="checkbox" id="randomize-interval" checked> 
-                <span style="font-size: 0.85em; color: #888;">Randomizar Intervalo</span>
+            <label>Duração do Estímulo (segundos): <input type="number" id="stim-dur" value="0.5" step="0.1"></label>
+            <label>Intervalo entre Estímulos (segundos): <input type="number" id="base-int" value="2.0" step="0.1"></label>
+            <div class="checkbox-item">
+                <input type="checkbox" id="random-mode" checked> <span>Randomizar Intervalo</span>
             </div>
+            <div class="checkbox-item" style="margin-top: 10px;">
+                <input type="checkbox" id="enable-legend" onchange="alternarSetupLegenda()"> <span>Deseja adicionar legenda no treino?</span>
+            </div>
+            <label style="margin-top:10px">Tempo Total da Sessão (segundos): <input type="number" id="total-time" value="60"></label>
         </div>
 
-        <div class="config-group">
-            <label>Tempo Total da Sessão (segundos)</label>
-            <input type="number" id="session-time" value="60" step="1" min="1">
+        <div id="legend-setup-container" class="config-group" style="display: none;">
+            <h2>Definir Legenda</h2>
+            <div id="legend-inputs"></div>
         </div>
 
         <div class="config-group">
             <h2>Selecione os Estímulos</h2>
-            
             <h3>Cores</h3>
             <div class="checkbox-grid">
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="VERMELHO"> Vermelho</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="VERDE"> Verde</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="AZUL"> Azul</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="COR DO BRUXÃO"> Cor do Bruxão</div>
+                <label><input type="checkbox" name="stim" value="VERMELHO" onchange="atualizarEntradasLegenda()"> Vermelho</label>
+                <label><input type="checkbox" name="stim" value="VERDE" onchange="atualizarEntradasLegenda()"> Verde</label>
+                <label><input type="checkbox" name="stim" value="AZUL" onchange="atualizarEntradasLegenda()"> Azul</label>
+                <label><input type="checkbox" name="stim" value="ROXO" onchange="atualizarEntradasLegenda()"> Roxo</label>
             </div>
-
             <h3>Setas</h3>
             <div class="checkbox-grid">
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="↑"> Cima</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="→"> Direita</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="↓"> Baixo</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="←"> Esquerda</div>
+                <label><input type="checkbox" name="stim-arrow" value="↑" onchange="atualizarEntradasLegenda()"> ↑</label>
+                <label><input type="checkbox" name="stim-arrow" value="↓" onchange="atualizarEntradasLegenda()"> ↓</label>
+                <label><input type="checkbox" name="stim-arrow" value="←" onchange="atualizarEntradasLegenda()"> ←</label>
+                <label><input type="checkbox" name="stim-arrow" value="→" onchange="atualizarEntradasLegenda()"> →</label>
+                <label><input type="checkbox" name="stim-arrow" value="↗" onchange="atualizarEntradasLegenda()"> ↗</label>
+                <label><input type="checkbox" name="stim-arrow" value="↖" onchange="atualizarEntradasLegenda()"> ↖</label>
+                <label><input type="checkbox" name="stim-arrow" value="↘" onchange="atualizarEntradasLegenda()"> ↘</label>
+                <label><input type="checkbox" name="stim-arrow" value="↙" onchange="atualizarEntradasLegenda()"> ↙</label>
             </div>
-
             <h3>Números</h3>
             <div class="checkbox-grid">
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="1"> 1</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="4"> 4</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="2"> 2</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="5"> 5</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="3"> 3</div>
-                <div class="checkbox-item"><input type="checkbox" name="stim" value="6"> 6</div>
+                <label><input type="checkbox" name="stim-number" value="1" onchange="atualizarEntradasLegenda()"> 1</label>
+                <label><input type="checkbox" name="stim-number" value="2" onchange="atualizarEntradasLegenda()"> 2</label>
+                <label><input type="checkbox" name="stim-number" value="3" onchange="atualizarEntradasLegenda()"> 3</label>
+                <label><input type="checkbox" name="stim-number" value="4" onchange="atualizarEntradasLegenda()"> 4</label>
+                <label><input type="checkbox" name="stim-number" value="5" onchange="atualizarEntradasLegenda()"> 5</label>
+                <label><input type="checkbox" name="stim-number" value="6" onchange="atualizarEntradasLegenda()"> 6</label>
+            </div>
+            <h3>Sons</h3>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="sound-stim" value="sons/alarme_relogio.mp3" onchange="atualizarEntradasLegenda()"> Alarme</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/celular.mp3" onchange="atualizarEntradasLegenda()"> Celular</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/gaita_1.mp3" onchange="atualizarEntradasLegenda()"> Gaita</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/martelada.mp3" onchange="atualizarEntradasLegenda()"> Martelada</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/sino.mp3" onchange="atualizarEntradasLegenda()"> Sino</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/sirene.mp3" onchange="atualizarEntradasLegenda()"> Sirene</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/tiro.mp3" onchange="atualizarEntradasLegenda()"> Tiro</label>
             </div>
         </div>
 
-        <button onclick="startTraining()">INICIAR SESSÃO</button>
+        <button onclick="prepararSessao()">INICIAR SESSÃO</button>
 
-        <div class="config-group" style="margin-top: 30px;">
-            <h2>Grimório</h2>
+        <div class="config-group" style="margin-top: 20px;">
+            <h2>Histórico</h2>
             <div id="history-list"></div>
-            <button onclick="clearHistory()" id="btn-clear">Limpar Tudo</button>
+            <button onclick="limparHistorico()" id="btn-clear">Limpar Tudo</button>
         </div>
     </div>
 
-    <div id="training-screen" class="container" style="display: none; justify-content: center;">
-        <div id="timer-display">Tempo: --s</div>
-        <div id="counter">Estímulos: 0</div>
+    <div id="training-screen" class="container training-mode" style="display: none;">
+        <div class="status-bar">
+            <div id="counter-display">Estímulos: 0</div>
+            <div id="timer-display">-- segundos</div>
+        </div>
+        
+        <div id="active-legend" class="training-legend" style="display: none;"></div>
+
+        <video id="intro-video" width="100%" style="display:none; border-radius: 15px;">
+            <source src="videos/cont_regressiva.mp4" type="video/mp4">
+        </video>
+
         <div id="display-area"></div>
-        <button class="stop-btn" onclick="stopTraining()">PARAR</button>
+        <button class="stop-btn" onclick="encerrarSessao()">PARAR</button>
     </div>
 
     <script src="script.js"></script>

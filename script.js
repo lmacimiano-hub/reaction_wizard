@@ -1,185 +1,157 @@
-let trainingTimeout;
-let sessionInterval;
-let lastStimulus = "";
-let stimulusCount = 0;
-let repeatCount = 0;
-let timeLeft = 0;
+let loopPrincipal, relogioSessao;
+let tempoRestante = 0, totalEstimulos = 0;
+let ultimoSorteado = "", contadorRepeticao = 0;
 
-window.onload = displayHistory;
+window.onload = carregarHistorico;
 
-function startTraining() {
-    const durationInput = document.getElementById('stimulus-duration').value;
-    const intervalInput = document.getElementById('base-interval').value;
-    const sessionInput = document.getElementById('session-time').value;
+function toggleHelp() {
+    const modal = document.getElementById('help-modal');
+    modal.style.display = (modal.style.display === "block") ? "none" : "block";
+}
 
-    const durationVal = parseFloat(durationInput);
-    const intervalVal = parseFloat(intervalInput);
-    const sessionVal = parseInt(sessionInput);
+function nomeSom(caminho) {
+    const mapa = {
+        "sons/alarme_relogio.mp3": "ALARME",
+        "sons/celular.mp3": "CELULAR",
+        "sons/gaita_1.mp3": "GAITA",
+        "sons/martelada.mp3": "MARTELADA",
+        "sons/sino.mp3": "SINO",
+        "sons/sirene.mp3": "SIRENE",
+        "sons/tiro.mp3": "TIRO"
+    };
+    return mapa[caminho] || "SOM";
+}
 
-    const duration = durationVal * 1000;
-    const interval = intervalVal * 1000;
-    const isRandom = document.getElementById('randomize-interval').checked;
-    timeLeft = sessionVal;
+function alternarSetupLegenda() {
+    const ativo = document.getElementById('enable-legend').checked;
+    document.getElementById('legend-setup-container').style.display = ativo ? 'block' : 'none';
+    if (ativo) atualizarEntradasLegenda();
+}
 
-    const selected = Array.from(document.querySelectorAll('input[name="stim"]:checked')).map(cb => cb.value);
+function atualizarEntradasLegenda() {
+    if (!document.getElementById('enable-legend').checked) return;
+    const container = document.getElementById('legend-inputs');
+    const selecionados = [
+        ...Array.from(document.querySelectorAll('input[name="stim"]:checked')),
+        ...Array.from(document.querySelectorAll('input[name="stim-arrow"]:checked')),
+        ...Array.from(document.querySelectorAll('input[name="stim-number"]:checked')),
+        ...Array.from(document.querySelectorAll('input[name="sound-stim"]:checked'))
+    ];
+    const valoresAntigos = {};
+    container.querySelectorAll('input').forEach(i => valoresAntigos[i.dataset.id] = i.value);
+    container.innerHTML = selecionados.map(s => {
+        const id = s.value;
+        const label = s.name === "sound-stim" ? nomeSom(id) : id;
+        return `<div><label>${label}:</label><input type="text" data-id="${id}" value="${valoresAntigos[id] || ""}"></div>`;
+    }).join('');
+}
 
-    // Validações de Regras de Negócio
-    if (selected.length < 1) {
-        alert("Selecione pelo menos um estímulo");
-        return;
+function prepararSessao() {
+    const v = Array.from(document.querySelectorAll('input[name="stim"]:checked')).map(c => c.value);
+    const a = Array.from(document.querySelectorAll('input[name="stim-arrow"]:checked')).map(c => c.value);
+    const n = Array.from(document.querySelectorAll('input[name="stim-number"]:checked')).map(c => c.value);
+    const s = Array.from(document.querySelectorAll('input[name="sound-stim"]:checked')).map(c => c.value);
+    if (![...v, ...a, ...n, ...s].length) return alert("Selecione um estímulo.");
+
+    const legendAtiva = document.getElementById('enable-legend').checked;
+    const legendDisplay = document.getElementById('active-legend');
+    if (legendAtiva) {
+        legendDisplay.innerHTML = Array.from(document.querySelectorAll('#legend-inputs input')).map(i => 
+            `<div class="legend-item"><b>${i.previousElementSibling.innerText}</b> ${i.value}</div>`
+        ).join('');
+        legendDisplay.style.display = 'block';
+    } else {
+        legendDisplay.style.display = 'none';
     }
 
-    if (durationVal < 0.1) {
-        alert("A duração do estímulo deve ser de no mínimo 0,1 segundos");
-        return;
-    }
-
-    if (intervalVal >= sessionVal) {
-        alert("O intervalo entre os estímulos não pode ser maior ou igual ao tempo total da sessão");
-        return;
-    }
-
-    // Reset de Estado
-    stimulusCount = 0;
-    repeatCount = 0;
-    lastStimulus = "";
-    
-    document.getElementById('counter').innerText = "Estímulos: 0";
-    document.getElementById('timer-display').innerText = `Tempo: ${timeLeft}s`;
-    
     document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('training-screen').style.display = 'flex';
-
-    executarContagem(selected, duration, interval, isRandom);
+    const trainingScreen = document.getElementById('training-screen');
+    trainingScreen.style.display = 'flex';
+    const video = document.getElementById('intro-video');
+    video.style.display = 'block';
+    video.play();
+    video.onended = () => {
+        video.style.display = 'none';
+        document.getElementById('display-area').style.display = 'flex';
+        iniciarTreino(v, a, n, s);
+    };
 }
 
-function executarContagem(stimuli, duration, interval, isRandom) {
-    const display = document.getElementById('display-area');
-    const passos = ["5", "4", "3", "2", "1", "BORA!"];
-    let i = 0;
-
-    display.style.background = "transparent";
-    display.style.color = "#bb86fc";
-
-    function proximoPasso() {
-        if (i < passos.length) {
-            display.innerText = passos[i];
-            i++;
-            setTimeout(proximoPasso, 1000);
-        } else {
-            display.innerText = "";
-            iniciarCronometroSessao();
-            runCycle(stimuli, duration, interval, isRandom);
-        }
-    }
-    proximoPasso();
-}
-
-function iniciarCronometroSessao() {
-    sessionInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer-display').innerText = `Tempo: ${timeLeft}s`;
-        
-        if (timeLeft <= 0) {
-            stopTraining();
-            alert("🪄 Sessão Encerrada!");
-        }
-    }, 1000);
-}
-
-function runCycle(stimuli, duration, interval, isRandom) {
-    if (timeLeft <= 0) return;
-
-    const display = document.getElementById('display-area');
-    const counterElement = document.getElementById('counter');
+function iniciarTreino(v, a, n, s) {
+    const dur = parseFloat(document.getElementById('stim-dur').value) * 1000;
+    const int = parseFloat(document.getElementById('base-int').value) * 1000;
+    tempoRestante = parseInt(document.getElementById('total-time').value);
+    totalEstimulos = 0;
+    ultimoSorteado = "";
+    contadorRepeticao = 0;
     
-    // Lógica de Randomização Controlada (0.7x a 1.5x)
-    let currentDelay = isRandom ? 
-        interval * (Math.random() * (1.5 - 0.7) + 0.7) : 
-        interval;
+    document.getElementById('timer-display').innerText = `${tempoRestante} segundos`;
+    document.getElementById('counter-display').innerText = `Estímulos: 0`;
 
-    trainingTimeout = setTimeout(() => {
-        let current;
-        
-        if (stimuli.length === 1) {
-            current = stimuli[0];
-        } else {
-            current = stimuli[Math.floor(Math.random() * stimuli.length)];
-            
-            // Controle de repetição (Limite de 3)
-            if (current === lastStimulus) {
-                repeatCount++;
-            } else {
-                repeatCount = 1;
-            }
-            if (repeatCount > 3) {
-                const options = stimuli.filter(s => s !== current);
-                current = options[Math.floor(Math.random() * options.length)];
-                repeatCount = 1;
-            }
-        }
-
-        lastStimulus = current;
-        stimulusCount++;
-        counterElement.innerText = `Estímulos: ${stimulusCount}`;
-
-        // Mapeamento de Cores e Estilos
-        const coresMapeadas = {
-            "VERMELHO": "#e74c3c",
-            "VERDE": "#2ecc71",
-            "AZUL": "#3498db",
-            "COR DO BRUXÃO": "#8a2be2"
-        };
-
-        if (coresMapeadas[current]) {
-            display.innerText = ""; // UX: Não mostra o nome da cor
-            display.style.background = coresMapeadas[current];
-        } else {
-            display.innerText = current; 
-            display.style.background = "transparent";
-            display.style.color = "#bb86fc"; 
-        }
-
-        setTimeout(() => {
-            display.innerText = "";
-            display.style.background = "transparent";
-            if (timeLeft > 0) runCycle(stimuli, duration, interval, isRandom);
-        }, duration);
-
-    }, currentDelay);
+    relogioSessao = setInterval(() => {
+        tempoRestante--;
+        document.getElementById('timer-display').innerText = `${tempoRestante} segundos`;
+        if (tempoRestante <= 0) encerrarSessao(true);
+    }, 1000);
+    cicloDeReacao(v, a, n, s, dur, int);
 }
 
-function stopTraining() {
-    clearTimeout(trainingTimeout);
-    clearInterval(sessionInterval);
-    saveSession();
+function cicloDeReacao(lv, la, ln, ls, dur, inter) {
+    if (tempoRestante <= 0) return;
+    const rand = document.getElementById('random-mode').checked;
+    let espera = rand ? inter * (Math.random() * (1.5 - 0.7) + 0.7) : inter;
+    loopPrincipal = setTimeout(() => {
+        const d = document.getElementById('display-area');
+        d.classList.remove('strokeme'); d.style.background = "transparent";
+        const pool = [...lv, ...la, ...ln, ...ls];
+        let sorteado = pool[Math.floor(Math.random() * pool.length)];
+        
+        // Algoritmo de inteligência de sorteio
+        if (pool.length > 1 && sorteado === ultimoSorteado) {
+            contadorRepeticao++;
+            if (contadorRepeticao > 3) {
+                sorteado = pool.filter(i => i !== sorteado)[Math.floor(Math.random() * (pool.length - 1))];
+                contadorRepeticao = 1;
+            }
+        } else { contadorRepeticao = 1; }
+        
+        ultimoSorteado = sorteado;
+        totalEstimulos++;
+        
+        if (sorteado.includes('.mp3')) {
+            new Audio(sorteado).play(); d.innerText = nomeSom(sorteado); d.classList.add('strokeme');
+        } else if (la.includes(sorteado) || ln.includes(sorteado)) {
+            d.innerText = sorteado; d.classList.add('strokeme');
+        } else {
+            const cores = {"VERMELHO": "#e74c3c", "VERDE": "#2ecc71", "AZUL": "#3498db", "ROXO": "#8a2be2"};
+            d.style.background = cores[sorteado] || "transparent"; d.innerText = "";
+        }
+        document.getElementById('counter-display').innerText = `Estímulos: ${totalEstimulos}`;
+        setTimeout(() => {
+            d.innerText = ""; d.style.background = "transparent";
+            if (tempoRestante > 0) cicloDeReacao(lv, la, ln, ls, dur, inter);
+        }, dur);
+    }, espera);
+}
+
+function encerrarSessao(finalizado) {
+    clearTimeout(loopPrincipal); clearInterval(relogioSessao);
+    if (finalizado) alert("Treino Finalizado!");
+    const logs = JSON.parse(localStorage.getItem('wizardHistoryPro') || '[]');
+    logs.unshift({ data: new Date().toLocaleDateString('pt-BR'), total: totalEstimulos });
+    localStorage.setItem('wizardHistoryPro', JSON.stringify(logs.slice(0, 5)));
+    carregarHistorico();
     document.getElementById('setup-screen').style.display = 'flex';
     document.getElementById('training-screen').style.display = 'none';
 }
 
-function saveSession() {
-    const history = JSON.parse(localStorage.getItem('reactionHistory') || '[]');
-    const durValue = document.getElementById('stimulus-duration').value;
-    const newEntry = {
-        data: new Date().toLocaleDateString('pt-BR'),
-        hora: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-        info: `Velocidade: ${durValue}s | Total: ${stimulusCount}`
-    };
-    history.unshift(newEntry);
-    localStorage.setItem('reactionHistory', JSON.stringify(history.slice(0, 5)));
-    displayHistory();
+function carregarHistorico() {
+    const logs = JSON.parse(localStorage.getItem('wizardHistoryPro') || '[]');
+    document.getElementById('history-list').innerHTML = logs.map(l => 
+        `<div class="history-item"><strong>${l.data}</strong>: ${l.total} estímulos</div>`
+    ).join('');
 }
 
-function displayHistory() {
-    const history = JSON.parse(localStorage.getItem('reactionHistory') || '[]');
-    const list = document.getElementById('history-list');
-    list.innerHTML = history.length === 0 ? "<p style='color: #666; font-size: 0.8em;'>Grimório vazio.</p>" : 
-        history.map(item => `<div class="history-item"><strong>${item.data} - ${item.hora}</strong><br>${item.info}</div>`).join('');
-}
-
-function clearHistory() {
-    if(confirm("Deseja apagar os registros do Grimório?")) {
-        localStorage.removeItem('reactionHistory');
-        displayHistory();
-    }
+function limparHistorico() {
+    if(confirm("Apagar histórico?")) { localStorage.removeItem('wizardHistoryPro'); carregarHistorico(); }
 }
