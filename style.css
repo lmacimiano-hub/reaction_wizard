@@ -28,26 +28,28 @@ body {
     box-sizing: border-box;
 }
 
+/* Centralização do Cabeçalho */
 .header-area {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 .wand-icon {
-    height: 1.5em;
+    height: 1.8em;
     width: auto;
 }
 
-h1 { color: var(--roxo-claro); font-variant: small-caps; margin: 0; font-size: 1.1em; }
+h1 { color: var(--roxo-claro); font-variant: small-caps; margin: 0; font-size: 1.2em; text-align: center; }
 
 #help-icon {
-    width: 28px; height: 28px;
+    width: 30px; height: 30px;
     background: white; color: var(--fundo-escuro); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-weight: bold; cursor: pointer; font-size: 0.8em; padding-bottom: 8px;
+    font-weight: bold; cursor: pointer; font-size: 0.9em; padding-bottom: 8px;
     box-sizing: border-box;
 }
 
@@ -73,19 +75,13 @@ input[type="number"], #legend-inputs input {
 
 .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-#legend-inputs div {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
+#legend-inputs div { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 #legend-inputs label { margin: 0; min-width: 80px; }
 
 .training-legend {
     position: fixed;
     right: 15px;
-    bottom: 90px; /* Posicionado acima do botão de parar no mobile */
+    bottom: 95px;
     background: rgba(30, 30, 30, 0.9);
     padding: 10px;
     border-radius: 8px;
@@ -93,7 +89,6 @@ input[type="number"], #legend-inputs input {
     font-size: 0.75em;
     max-width: 130px;
     z-index: 100;
-    pointer-events: none;
 }
 
 .legend-item { margin-bottom: 4px; border-bottom: 1px solid #333; padding-bottom: 2px; }

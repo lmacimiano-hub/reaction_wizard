@@ -106,7 +106,6 @@ function cicloDeReacao(lv, la, ln, ls, dur, inter) {
         const pool = [...lv, ...la, ...ln, ...ls];
         let sorteado = pool[Math.floor(Math.random() * pool.length)];
         
-        // Algoritmo de inteligência de sorteio
         if (pool.length > 1 && sorteado === ultimoSorteado) {
             contadorRepeticao++;
             if (contadorRepeticao > 3) {

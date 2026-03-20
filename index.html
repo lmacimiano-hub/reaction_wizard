@@ -16,8 +16,9 @@
             <ul>
                 <li><strong>Associação:</strong> Associe cada cor, seta, número ou som a um movimento.</li>
                 <li><strong>Execução:</strong> Assim que o estímulo for emitido, execute o movimento combinado o mais rápido possível.</li>
-                <li><strong>Legenda:</strong> Use para não esquecer qual movimento associou a cada sinal durante o treino.</li>
-                <li><strong>Inteligência:</strong> O app impede que o mesmo estímulo se repita mais de 3 vezes seguidas.</li>
+                <li><strong>Legenda:</strong> Use para não esquecer qual movimento associou a cada sinal.</li>
+                <li><strong>Inteligência de sequenciamento:</strong> O app impede que o mesmo estímulo se repita várias vezes seguidas.</li>
+                <li><strong>Randomizar:</strong> Quando ativo, o app varia o tempo de espera entre 70% e 150% do valor base.</li>
             </ul>
         </div>
     </div>
@@ -36,10 +37,11 @@
             <div class="checkbox-item">
                 <input type="checkbox" id="random-mode" checked> <span>Randomizar Intervalo</span>
             </div>
-            <div class="checkbox-item" style="margin-top: 10px;">
+            <label style="margin-top:10px">Tempo Total da Sessão (segundos): <input type="number" id="total-time" value="60"></label>
+            
+            <div class="checkbox-item" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
                 <input type="checkbox" id="enable-legend" onchange="alternarSetupLegenda()"> <span>Deseja adicionar legenda no treino?</span>
             </div>
-            <label style="margin-top:10px">Tempo Total da Sessão (segundos): <input type="number" id="total-time" value="60"></label>
         </div>
 
         <div id="legend-setup-container" class="config-group" style="display: none;">
@@ -102,13 +104,10 @@
             <div id="counter-display">Estímulos: 0</div>
             <div id="timer-display">-- segundos</div>
         </div>
-        
         <div id="active-legend" class="training-legend" style="display: none;"></div>
-
         <video id="intro-video" width="100%" style="display:none; border-radius: 15px;">
             <source src="videos/cont_regressiva.mp4" type="video/mp4">
         </video>
-
         <div id="display-area"></div>
         <button class="stop-btn" onclick="encerrarSessao()">PARAR</button>
     </div>
