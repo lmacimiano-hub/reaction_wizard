@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reaction Wizard Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,92 +14,99 @@
             <h2>Manual</h2>
             <ul>
                 <li><strong>Associação:</strong> Defina movimentos para cada estímulo.</li>
-                <li><strong>Sequência:</strong> Monte roteiros clicando nos estímulos na ordem desejada.</li>
-                <li><strong>Layout Dinâmico:</strong> A legenda aparece integrada ao estímulo.</li>
+                <li><strong>Inteligência:</strong> O app impede repetições excessivas.</li>
+                <li><strong>Randomizar:</strong> Varia o intervalo entre estímulos.</li>
             </ul>
         </div>
     </div>
 
-    <div class="container">
+    <div id="setup-screen" class="container">
         <div class="header-area">
             <img src="imagens/varinha.png" alt="" class="wand-icon">
             <h1>Reaction Wizard</h1>
             <span>🧙‍♂️</span>
             <div id="help-icon" onclick="toggleHelp()">...</div>
         </div>
-
-        <div id="home-screen" class="menu-container">
-            <button class="menu-btn" onclick="irParaSetup('aleatorio')">Estímulos Aleatórios</button>
-            <button class="menu-btn" onclick="irParaSetup('sequencia')">Sequência Pré-Definida</button>
-            <button class="menu-btn disabled">Cronômetro</button>
-        </div>
-
-        <div id="setup-screen" style="display: none; width: 100%;">
-            <div id="sequence-builder" class="config-group" style="display: none;">
-                <h2>Montar Sequência</h2>
-                <div id="sequence-queue"></div>
-                <button onclick="limparSequencia()" class="secondary-btn" style="font-size: 0.8em; padding: 5px; margin-bottom: 10px;">Limpar Fila</button>
-                <div id="saved-sequences-container" style="border-top: 1px solid #333; padding-top: 10px;">
-                    <h3>Sequências Salvas</h3>
-                    <div id="saved-sequences-list"></div>
-                    <div style="margin-top: 10px; display: flex; gap: 5px;">
-                        <input type="text" id="new-sequence-name" placeholder="Nome da sequência...">
-                        <button onclick="salvarSequenciaAtual()" style="width: auto; padding: 5px 15px; font-size: 0.8em;">Salvar</button>
-                    </div>
-                </div>
+        
+        <div class="config-group">
+            <label>Duração do Estímulo (s): <input type="number" id="stim-dur" value="0.5" step="0.1"></label>
+            <label>Intervalo entre Estímulos (s): <input type="number" id="base-int" value="2.0" step="0.1"></label>
+            <div class="checkbox-item">
+                <input type="checkbox" id="random-mode" checked> <span>Randomizar Intervalo</span>
             </div>
-
-            <div class="config-group">
-                <label>Duração do Estímulo (s): <input type="number" id="stim-dur" value="0.5" step="0.1"></label>
-                <label>Intervalo entre Estímulos (s): <input type="number" id="base-int" value="2.0" step="0.1"></label>
-                <div id="random-option">
-                    <input type="checkbox" id="random-mode" checked> <span>Randomizar Intervalo</span>
-                </div>
-                <label style="margin-top:10px">Tempo Total da Sessão (s): <input type="number" id="total-time" value="60"></label>
-                <div class="checkbox-item" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                    <input type="checkbox" id="enable-legend" onchange="alternarSetupLegenda()"> <span>Deseja adicionar legenda no treino?</span>
-                </div>
-            </div>
-
-            <div id="legend-setup-container" class="config-group" style="display: none;">
-                <h2>Definir Movimentos</h2>
-                <div id="legend-inputs"></div>
-            </div>
-
-            <div class="config-group">
-                <h2 id="selection-title">Selecione os Estímulos</h2>
-                <div id="stimuli-selection-area">
-                    <h3>Cores</h3><div class="checkbox-grid" id="grid-cores"></div>
-                    <h3>Setas</h3><div class="checkbox-grid" id="grid-setas"></div>
-                    <h3>Números</h3><div class="checkbox-grid" id="grid-numeros"></div>
-                    <h3>Sons</h3><div class="checkbox-grid" id="grid-sons"></div>
-                </div>
-            </div>
-
-            <button onclick="prepararSessao()">INICIAR SESSÃO</button>
-            <button onclick="voltarParaMenu()" class="secondary-btn">VOLTAR AO MENU</button>
-
-            <div class="config-group" style="margin-top: 20px;">
-                <h2>Histórico</h2>
-                <div id="history-list"></div>
-                <button onclick="limparHistorico()" id="btn-clear">Limpar Tudo</button>
-            </div>
-        </div>
-
-        <div id="training-screen" style="display: none; width: 100%; height: 80vh; flex-direction: column;">
-            <div class="status-bar">
-                <div id="counter-display">Estímulos: 0</div>
-                <div id="timer-display">-- segundos</div>
-            </div>
+            <label style="margin-top:10px">Tempo Total da Sessão (s): <input type="number" id="total-time" value="60"></label>
             
-            <div id="display-container" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <video id="intro-video" width="100%" style="display:none; border-radius: 15px;">
-                    <source src="videos/cont_regressiva.mp4" type="video/mp4">
-                </video>
-                <div id="display-area"></div>
-                <div id="dynamic-label"></div>
+            <div class="checkbox-item" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
+                <input type="checkbox" id="enable-legend" onchange="alternarSetupLegenda()"> <span>Deseja adicionar legenda no treino?</span>
             </div>
+        </div>
 
+        <div id="legend-setup-container" class="config-group" style="display: none;">
+            <h2>Definir Movimentos</h2>
+            <div id="legend-inputs"></div>
+        </div>
+
+        <div class="config-group">
+            <h2>Selecione os Estímulos</h2>
+            <h3>Cores</h3>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="stim" value="VERMELHO" onchange="atualizarEntradasLegenda()"> Vermelho</label>
+                <label><input type="checkbox" name="stim" value="VERDE" onchange="atualizarEntradasLegenda()"> Verde</label>
+                <label><input type="checkbox" name="stim" value="AZUL" onchange="atualizarEntradasLegenda()"> Azul</label>
+                <label><input type="checkbox" name="stim" value="ROXO" onchange="atualizarEntradasLegenda()"> Roxo</label>
+            </div>
+            <h3>Setas</h3>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="stim-arrow" value="↑" onchange="atualizarEntradasLegenda()"> ↑</label>
+                <label><input type="checkbox" name="stim-arrow" value="↓" onchange="atualizarEntradasLegenda()"> ↓</label>
+                <label><input type="checkbox" name="stim-arrow" value="←" onchange="atualizarEntradasLegenda()"> ←</label>
+                <label><input type="checkbox" name="stim-arrow" value="→" onchange="atualizarEntradasLegenda()"> →</label>
+                <label><input type="checkbox" name="stim-arrow" value="↗" onchange="atualizarEntradasLegenda()"> ↗</label>
+                <label><input type="checkbox" name="stim-arrow" value="↖" onchange="atualizarEntradasLegenda()"> ↖</label>
+                <label><input type="checkbox" name="stim-arrow" value="↘" onchange="atualizarEntradasLegenda()"> ↘</label>
+                <label><input type="checkbox" name="stim-arrow" value="↙" onchange="atualizarEntradasLegenda()"> ↙</label>
+            </div>
+            <h3>Números</h3>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="stim-number" value="1" onchange="atualizarEntradasLegenda()"> 1</label>
+                <label><input type="checkbox" name="stim-number" value="2" onchange="atualizarEntradasLegenda()"> 2</label>
+                <label><input type="checkbox" name="stim-number" value="3" onchange="atualizarEntradasLegenda()"> 3</label>
+                <label><input type="checkbox" name="stim-number" value="4" onchange="atualizarEntradasLegenda()"> 4</label>
+            </div>
+            <h3>Sons</h3>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="sound-stim" value="sons/alarme_relogio.mp3" onchange="atualizarEntradasLegenda()"> Alarme</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/celular.mp3" onchange="atualizarEntradasLegenda()"> Celular</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/tiro.mp3" onchange="atualizarEntradasLegenda()"> Tiro</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/sino.mp3" onchange="atualizarEntradasLegenda()"> Sino</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/gaita_1.mp3" onchange="atualizarEntradasLegenda()"> Gaita</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/martelada.mp3" onchange="atualizarEntradasLegenda()"> Martelada</label>
+                <label><input type="checkbox" name="sound-stim" value="sons/sirene.mp3" onchange="atualizarEntradasLegenda()"> Sirene</label>
+            </div>
+        </div>
+
+        <button onclick="prepararSessao()">INICIAR SESSÃO</button>
+
+        <div class="config-group" style="margin-top: 20px;">
+            <h2>Histórico</h2>
+            <div id="history-list"></div>
+            <button onclick="limparHistorico()" id="btn-clear">Limpar Tudo</button>
+        </div>
+    </div>
+
+    <div id="training-screen" style="display: none; height: 100vh; flex-direction: column; overflow: hidden; position: fixed; top: 0; left: 0; width: 100%; background: #121212; z-index: 1000;">
+        <div class="status-bar" style="height: 15vh; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+            <div id="counter-display">Estímulos: 0</div>
+            <div id="timer-display">-- s</div>
+        </div>
+        <div id="display-container" style="height: 65vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <video id="intro-video" width="100%" style="display:none; border-radius: 15px; max-height: 100%;">
+                <source src="videos/cont_regressiva.mp4" type="video/mp4">
+            </video>
+            <div id="display-area"></div>
+            <div id="dynamic-label"></div>
+        </div>
+        <div style="height: 20vh; display: flex; align-items: center; justify-content: center; padding: 0 20px;">
             <button class="stop-btn" onclick="encerrarSessao()">PARAR</button>
         </div>
     </div>
